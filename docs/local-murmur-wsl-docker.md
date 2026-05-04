@@ -35,5 +35,7 @@ curl -F 'upload=@sample.wav;type=audio/wav' http://localhost:8001/transcribe
 ```
 
 If the upload arrives with a generic or missing audio content type, the intake endpoint rejects it.
+WAV uploads are also checked with Python's standard `wave` module so invalid or spoofed `.wav` files are rejected and duration can be reported.
+Deeper media probing for non-WAV formats is deferred until a later ffmpeg-backed validation step.
 
 If your Docker/WSL setup uses a different host alias or port, override it in `.env.local-murmur`.

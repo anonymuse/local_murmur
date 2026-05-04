@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import wave
 
 from fastapi import HTTPException, UploadFile, status
 
@@ -69,6 +70,34 @@ def validate_upload_size(*, size_bytes: int, max_upload_size_bytes: int) -> None
         raise HTTPException(
             status_code=status.HTTP_413_CONTENT_TOO_LARGE,
             detail="Uploaded audio exceeds the configured maximum size.",
+        )
+
+
+def inspect_wav_duration(path: Path) -> float:
+    try:
+        with wave.open(str(path), "rb") as wav_file:
+            frame_count = wav_file.getnframes()
+            frame_rate = wav_file.getframerate()
+    except (EOFError, OSError, wave.Error) as exc:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="Invalid WAV audio file.",
+        ) from exc
+
+    if frame_rate <= 0:
+        raise HTTPException(
+            status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
+            detail="Invalid WAV audio file.",
+        )
+
+    return frame_count / frame_rate
+
+
+def validate_wav_duration(*, duration_seconds: float, max_duration_seconds: int) -> None:
+    if duration_seconds > max_duration_seconds:
+        raise HTTPException(
+            status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+            detail="Uploaded WAV exceeds the configured maximum duration.",
         )
 
 
