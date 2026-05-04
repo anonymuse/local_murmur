@@ -1,0 +1,22 @@
+name: local-murmur
+
+services:
+  api:
+    container_name: local-murmur-api
+    build:
+      context: ../..
+      dockerfile: docker/local-murmur/Dockerfile
+    command: uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      APP_HOST: 0.0.0.0
+      APP_PORT: 8000
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma4:e4b}
+      LLM_PROVIDER: ${LLM_PROVIDER:-none}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-}
+      TEMP_DIR: /tmp/local-murmur
+    ports:
+      - "${HOST_PORT:-8001}:8000"
+    volumes:
+      - ../..:/app
