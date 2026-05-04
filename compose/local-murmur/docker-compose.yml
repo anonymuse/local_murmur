@@ -17,6 +17,6 @@ services:
       OPENAI_MODEL: ${OPENAI_MODEL:-}
       TEMP_DIR: /tmp/local-murmur
     ports:
-      - "8001:8000"
+      - "${HOST_PORT:-8001}:8000"
     volumes:
       - ../..:/app
