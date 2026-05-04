@@ -10,3 +10,4 @@ class TranscribeIntakeResponse(BaseModel):
     filename: str
     content_type: str | None = None
     size_bytes: int
+    duration_seconds: float | None = None
